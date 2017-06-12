@@ -1,0 +1,3 @@
+# Link tests with pictureio library
+ADDITIONAL_OBJC_LIBS += -lgnustep-boron
+ADDITIONAL_OBJCFLAGS =
