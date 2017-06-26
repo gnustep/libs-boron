@@ -1,0 +1,241 @@
+<div class="entry-content"><p>If you’re a Mac or iOS developer, you’ve probably heard of UTIs; if you
+come from some other platform, you probably haven’t, so I’ll start with
+a quick overview.</p>
+
+<p>UTI stands for Uniform Type Identifier, and it’s used in a similar way
+to a MIME type—it’s a name for a particular kind of data—but unlike
+MIME types, UTIs are based on reverse DNS syntax strings (with two
+notable exceptions, which we’ll get to in a minute).  If you want a new
+MIME type, you either have to register it with IETF, which is
+time-consuming <em>and</em> a source of uncertainty (they might not agree that
+you need one), <em>or</em> you can stick an <code>x-</code> prefix on it (but this might
+create clashes).  If you want a UTI, however, all you need do is own an
+Internet domain; if you own <code>example.com</code>, you also own all of the UTI
+namespace starting <code>com.example</code>, so you could use <code>com.example.MyDataType</code>.</p>
+
+<p>If you’re familiar with MIME types, you’ll also know that they’re split
+into two pieces, separated by a ‘/’ character.  For instance, <code>text/plain</code>
+or <code>image/jpeg</code>.  The part before the ‘/’ is supposed to tell you what
+<em>kind</em> of data you’re dealing with.  This is useful, but it really doesn’t
+give you that much information; for instance, if you have a MIME type
+starting <code>text/</code>, you know it’s <em>some</em> kind of text, but you don’t really
+know how to decode it, or even if it’s compatible with US-ASCII.</p>
+
+<p>UTIs, on the other hand, have a conformance hierarchy, so it’s possible
+to tell the system that your wonderful new data format,
+<code>com.example.MyDataType</code>, is actually a kind of video file.  Moreover,
+you can be specific about it; maybe it’s actually a special kind of
+MPEG file.  How does this work?  Well, Apple has reserved all UTIs
+starting <code>public.</code>, and has defined a large set of standard UTIs in
+that space.  For instance, <code>public.jpeg</code> conforms to <code>public.image</code>,
+which in turn conforms to <code>public.data</code>, which, in turn, conforms to
+<code>public.item</code>.  There’s actually more than one hierarchy
+(e.g. <code>public.text</code> conforms to both <code>public.data</code> <em>and</em>
+<code>public.content</code>), and Apple provides APIs that allow you to test any
+given UTI for conformance with any other UTI.</p>
+
+<p>Additionally, every UTI has associated with it a set of <em>tags</em>.  These
+are things like file extensions, MIME types and Mac OS <code>OSType</code> codes,
+and each class of tag is identified by—you guessed it—a UTI.  So,
+the UTI for a file extension is <code>public.filename-extension</code>, for a
+MIME type it’s <code>public.mime-type</code> and for an <code>OSType</code> it’s
+<code>com.apple.ostype</code>.  Again, APIs are provided that allow you to ask,
+given a UTI, e.g. what the file extension might be for that UTI.</p>
+
+<p>Finally, Apple’s platform allows applications to declare their own UTIs by
+adding information to their <code>Info.plist</code> files, which makes them
+accessible to all applications on the system.</p>
+
+<p>So what, you ask?  Well here’s the really clever part; there’s an API
+that, given a tag class and a tag will find you the most appropriate
+UTI.  For instance, if you give it <code>public.filename-extension</code> and
+<code>jpeg</code>, it will return <code>public.jpeg</code>.  However, sometimes you’ll have
+a file that the system doesn’t recognize; <em>you</em> might know something
+about it (e.g. it’s file extension), but it isn’t in the system’s UTI
+database, and no application has mentioned it in their <code>Info.plist</code>.
+What happens now?  Well, if, for instance, you ask for the UTI for a
+file you’ve found with the extension <code>frob</code>, you’ll get back a rather
+cryptic looking answer: <code>dyn.age80q6xtqk</code>.</p>
+
+<p>The neat part about this odd-looking UTI is that
+<em>the information you gave the system is still there</em>.  If you ask any
+Mac or iOS device for the file extension for <code>dyn.age80q6xtqk</code>, it
+will immediately tell you: <code>frob</code>.  You could transmit this UTI across
+a network, and <em>it would still tell you</em> when you ask, that the
+extension is <code>frob</code>.</p>
+
+<p>This runs slightly deeper, though.  When you ask for a UTI, you can
+specify that it must conform to a particular type.  Maybe you know
+that your <code>frob</code> file is really some kind of <code>public.text</code>?  In that
+case, you might instead get the answer: <code>dyn.ah62d4r34ge80q6xtqk</code>.
+You might be able to guess that this new UTI <em>also</em> knows that it
+conforms to <code>public.text</code>, and again, any Mac or iOS device presented
+with this UTI will be able to tell you so.</p>
+
+<p>Why is this feature useful?  Well, web server administrators will have
+seen the unusual behaviour of various client systems when their server
+doesn’t know the correct MIME type for a file; some systems try to
+guess from the file extension, while others throw their hands up and
+treat the file as raw data (which is probably but not necessarily the
+default on any given web server).  If the web used UTIs instead, the
+UTI would preserve all of the information the server <em>did</em> have, which
+would result in an improved experience in some cases.</p>
+
+<p>What Apple doesn’t tell you is that these dynamic UTIs can actually
+hold more than just a single tag class.  For example, the UTI</p>
+
+<pre><code>dyn.ah62d4r34gq81k3p2su1zuppgsm10esvvhzxhe55c
+</code></pre>
+
+<p>has a MIME type (<code>text/X-frob</code>), and a file extension (<code>frob</code>) as well
+as stipulating conformance to <code>public.text</code>.  There’s no API on Mac OS
+X or iOS that will construct this UTI for you, mind… so how did I do
+it?</p>
+
+<p>Well, the first thing you need to know is that all dynamic UTIs
+currently start with the string <code>dyn.a</code>.  The first part, <code>dyn.</code>
+identifies the fact that it’s a dynamically generated UTI; the ‘a’ is,
+I’m guessing, a format identifier (so if you’re parsing these UTIs
+yourself, you <strong>must</strong> check that it’s an ‘a’ and not any other
+character; if it isn’t an ‘a’, you should indicate that you don’t
+understand the UTI).</p>
+
+<p>Strip that off, and we have a funny looking string, which, it turns
+out, is encoded in a custom form of base-32 encoding using the
+encoding vector</p>
+
+<pre><code>abcdefghkmnpqrstuvwxyz0123456789
+</code></pre>
+
+<p>Let’s decode the dynamic UTI above and see what it contains; feeding
+the string</p>
+
+<pre><code>h62d4r34gq81k3p2su1zuppgsm10esvvhzxhe55c
+</code></pre>
+
+<p>through a custom base-32 decoder, we get</p>
+
+<pre><code>?0=7:3=text/X-frob:1=frob
+</code></pre>
+
+<p>Hmmm.  Let’s look at another example; say we have a custom tag class
+<code>com.example.SpecialType</code>… let’s generate a UTI with that.  Here it
+is:</p>
+
+<pre><code>dyn.ah62d4r34qr104pxftbu046dqqy1fg6dfqry0c5cytf2gntpgr710e2pw
+</code></pre>
+
+<p>Yikes!  That’s a lot longer.  What happened?  Well, decoding it, we
+see</p>
+
+<pre><code>?0=7:com.example.SpecialType=foobar
+</code></pre>
+
+<p>Aha.  So these are key-value pairs with the tag class and tag
+respectively.  What about that funny ?0=7 on the front?  Well, when I
+created this UTI I said it conformed to <code>public.text</code>.  What if it
+conforms instead to <code>com.example.Borked</code>?  Now I get</p>
+
+<pre><code>dyn.ah62d425try1gn8dbrz2g23mskm11e45fqu7gg55rf3w1u2prsb0gnpwxsbw0g4pbrvnhw6dfhzxg855cqf3a
+</code></pre>
+
+<p>which decodes to</p>
+
+<pre><code>?0=com.example.Borked:com.example.SpecialType=foobar
+</code></pre>
+
+<p>Hmmm.  So <code>?0</code> means “the UTI we conform to”, right?  So ‘7’ must mean
+<code>public.text</code>…</p>
+
+<p>Well, it turns out that the system has a built-in list of UTIs that
+get abbreviated to the hexadecimal digits ‘0’ through ‘F’.  They are:</p>
+
+<pre><code>0: UTTypeConformsTo
+1: public.filename-extension
+2: com.apple.ostype
+3: public.mime-type
+4: com.apple.nspboard-type
+5: public.url-scheme
+6: public.data
+7: public.text
+8: public.plain-text
+9: public.utf16-plain-text
+A: com.apple.traditional-mac-plain-text
+B: public.image
+C: public.video
+D: public.audio
+E: public.directory
+F: public.folder
+</code></pre>
+
+<p>Now we can understand the string we saw earlier;</p>
+
+<pre><code>?0=7:3=text/X-frob:1=frob
+</code></pre>
+
+<p>expands to</p>
+
+<pre><code>?UTTypeConformsTo=public.text:public.mime-type=text/X-frob:public.filename-extension=frob
+</code></pre>
+
+<p>There are, as ever, a couple of niggles.  The first is that tags might
+in general contain special characters (for instance, ‘=’ signs) that
+would mess us up.  What does the UTI system do about these?  It
+escapes them, that’s what.  The set of characters that are escaped is:</p>
+
+<pre><code>, : = \ NUL
+</code></pre>
+
+<p>The ‘,’ is interesting; it turns out that each of the keys in the
+string can have more than one value associated with them.  That is,
+it’s legal for the UTI to encode something like</p>
+
+<pre><code>?0=7,B:3=text/X-frob,image/X-frob:1=frob
+</code></pre>
+
+<p>resulting in something like</p>
+
+<pre><code>dyn.ah62d4r3qkk7dgtpyqz6hkp42fzxhe55cfvy042phqy1zuppgsm10esvvhzxhe55c
+</code></pre>
+
+<p>If you ask the system about this UTI, you’ll find that it conforms to
+<em>both</em> <code>public.text</code> and <code>public.image</code>, in spite of the fact that
+neither type conforms to the other.  Unfortunately, Apple only
+provides a way to copy the <em>preferred</em> tag given a tag class and a
+UTI, so if you ask for its MIME type, you’ll only get <code>text/X-frob</code>
+(the first one, as per the documentation).</p>
+
+<p>So, in summary:</p>
+
+<ul>
+  <li>
+    <p>We’ve seen that UTIs can encapsulate <em>any</em> kind of type
+information, not just the obvious ones like file extensions.  You
+can define your own type information, entirely orthogonal to the
+set Apple uses, if you like.</p>
+  </li>
+  <li>
+    <p>We’ve seen that conformance information allows programs using UTIs
+to determine that (for instance) they know how to handle data with a UTI
+they’ve <em>never even seen before</em> because it conforms to a UTI they
+do understand.</p>
+  </li>
+  <li>
+    <p>We’ve seen that it’s possible to generate dynamic UTIs that will
+remember the information with which they were created even when
+passed to another system.</p>
+  </li>
+  <li>
+    <p>We’ve seen how these dynamic are generated, and the mechanism by
+which they hold the information given when they were created.</p>
+  </li>
+</ul>
+
+<p>If you’re interested in reading Apple’s documentation, you might find
+their <a href="http://developer.apple.com/library/mac/#documentation/FileManagement/Conceptual/understanding_utis/understand_utis_intro/understand_utis_intro.html">Uniform Type Identifiers Overview</a>
+informative.  Note that the format of the dynamic UTIs is
+<em>undocumented</em>.  If you are going to rely on the information I
+presented above, <strong>make sure you check that they start <code>dyn.a</code></strong> and
+<strong>do not</strong> assume that you understand any dynamic UTI that has a
+different format identifier.</p>
+</div>
