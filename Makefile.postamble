@@ -18,7 +18,8 @@
 # before-install::
 
 # Things to do after installing
-# after-install::
+after-install::
+	@cp -f ./Headers/MacTypes.h /usr/local/include
 
 # Things to do before uninstalling
 # before-uninstall::
