@@ -24,6 +24,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef __gnustep_boron_SDToolboxEvents
+#define __gnustep_boron_SDToolboxEvents
+
 /* Virtual Keycodes */
 enum
 {
@@ -159,6 +162,7 @@ enum
   kVK_JIS_Kana = 0x68
 };
 
+/* Keyboard Event Modifiers */
 typedef unsigned int EventModifiers;
 enum
 {
@@ -173,3 +177,5 @@ enum
   rightOptionKey = 1 << 14,
   rightControlKey = 1 << 15
 };
+
+#endif

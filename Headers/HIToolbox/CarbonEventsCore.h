@@ -1,4 +1,4 @@
-/* HIToolbox.h
+/* CarbonEventsCore.h
 
    Copyright (C) 2017 Free Software Foundation, Inc.
 
@@ -24,10 +24,20 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __gnustep_boron_SDToolbox
-#define __gnustep_boron_SDToolbox
+#ifndef __gnustep_boron_CarbonEventsCore
+#define __gnustep_boron_CarbonEventsCore
 
-#include <HIToolbox/Events.h>
-#include <HIToolbox/CarbonEventsCore.h>
+#include <CoreFoundation/CFBase.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern UInt32 
+GetCurrentKeyModifiers(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

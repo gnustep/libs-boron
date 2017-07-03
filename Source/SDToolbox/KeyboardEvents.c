@@ -1,9 +1,9 @@
-/* HIToolbox.h
+/* KeyboardEvents.c
 
    Copyright (C) 2017 Free Software Foundation, Inc.
 
    Written by: Daniel Ferreira
-   Date: July, 2017
+   Date: June, 2017
 
    This file is part of GNUstep Boron Library.
 
@@ -23,11 +23,12 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-
-#ifndef __gnustep_boron_SDToolbox
-#define __gnustep_boron_SDToolbox
-
-#include <HIToolbox/Events.h>
+ 
 #include <HIToolbox/CarbonEventsCore.h>
 
-#endif
+UInt32 
+GetCurrentKeyModifiers(void)
+{
+  // FIXME: unimplemented
+  return 0;
+}

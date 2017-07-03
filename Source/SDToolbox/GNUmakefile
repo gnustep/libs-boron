@@ -4,9 +4,10 @@ PACKAGE_NAME = gnustep-boron
 SUBPROJECT_NAME = SDToolbox
 
 $(SUBPROJECT_NAME)_C_FILES = \
-  Empty.c
+  KeyboardEvents.c
 
 $(SUBPROJECT_NAME)_HEADER_FILES = \
+  CarbonEventsCore.h \
   Events.h
 
 $(SUBPROJECT_NAME)_INCLUDE_DIRS = -I../../Headers
