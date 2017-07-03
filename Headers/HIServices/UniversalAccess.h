@@ -1,4 +1,4 @@
-/* HIServices.h
+/* UniversalAccess.h
 
    Copyright (C) 2017 Free Software Foundation, Inc.
 
@@ -24,10 +24,35 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __gnustep_boron_HIServices
-#define __gnustep_boron_HIServices
+#ifndef __gnustep_boron_UniversalAccess
+#define __gnustep_boron_UniversalAccess
 
-#include <HIServices/Accessibility.h>
-#include <HIServices/UniversalAccess.h>
+#include <CoreFoundation/CFBase.h>
+#include <CoreGraphics/CoreGraphics.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef uint32_t UAZoomChangeFocusType;
+
+enum
+{
+  kUAZoomFocusTypeOther = 0,
+  kUAZoomFocusTypeInsertionPoint = 1
+};
+
+extern Boolean 
+UAZoomEnabled(void);
+
+extern OSStatus 
+UAZoomChangeFocus(
+  const CGRect *inRect,
+  const CGRect *inHighlightRect,
+  UAZoomChangeFocusType inType);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

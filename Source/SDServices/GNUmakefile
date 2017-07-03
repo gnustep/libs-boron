@@ -4,7 +4,7 @@ PACKAGE_NAME = gnustep-boron
 SUBPROJECT_NAME = SDServices
 
 $(SUBPROJECT_NAME)_C_FILES = \
-  Empty.c
+  UniversalAccess.c
 
 $(SUBPROJECT_NAME)_HEADER_FILES = \
   HIServices.h \
@@ -16,7 +16,8 @@ $(SUBPROJECT_NAME)_HEADER_FILES = \
   AXNotificationConstants.h \
   AXRoleConstants.h \
   AXValueConstants.h \
-  AXUIElement.h
+  AXUIElement.h \
+  UniversalAccess.h
 
 $(SUBPROJECT_NAME)_INCLUDE_DIRS = -I../../Headers
 $(SUBPROJECT_NAME)_HEADER_FILES_DIR = ../../Headers/HIServices
