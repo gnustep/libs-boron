@@ -158,3 +158,18 @@ enum
   kVK_JIS_Eisu = 0x66,
   kVK_JIS_Kana = 0x68
 };
+
+typedef unsigned int EventModifiers;
+enum
+{
+  activeFlag = 1 << 0,
+  btnState = 1 << 7,
+  cmdKey = 1 << 8,
+  shiftKey = 1 << 9,
+  alphaLock = 1 << 10,
+  optionKey = 1 << 11,
+  controlKey = 1 << 12,
+  rightShiftKey = 1 << 13,
+  rightOptionKey = 1 << 14,
+  rightControlKey = 1 << 15
+};
