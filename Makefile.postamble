@@ -20,6 +20,14 @@
 # Things to do after installing
 after-install::
 	@cp -f ./Headers/MacTypes.h /usr/local/include
+	@mkdir -p /usr/local/include/ApplicationServices
+	@cp -f ./Headers/ApplicationServices/ApplicationServices.h /usr/local/include/ApplicationServices
+	@mkdir -p /usr/local/include/CoreServices
+	@cp -f ./Headers/CoreServices/CoreServices.h /usr/local/include/CoreServices
+	@mkdir -p /usr/local/include/Carbon
+	@cp -f ./Headers/Carbon/Carbon.h /usr/local/include/Carbon
+	@mkdir -p /usr/local/include/ColorSync
+	@cp -f ./Headers/ColorSync/ColorSync.h /usr/local/include/ColorSync
 
 # Things to do before uninstalling
 # before-uninstall::
