@@ -15,7 +15,8 @@ $(SUBPROJECT_NAME)_HEADER_FILES = \
   CarbonCore.h \
   MacErrors.h \
   TextCommon.h \
-  TextEncodingConverter.h
+  TextEncodingConverter.h \
+  UnicodeConverter.h
 
 $(SUBPROJECT_NAME)_INCLUDE_DIRS = -I../../Headers
 $(SUBPROJECT_NAME)_HEADER_FILES_DIR = ../../Headers/CarbonCore

@@ -30,5 +30,6 @@
 #include <CarbonCore/MacErrors.h>
 #include <CarbonCore/TextCommon.h>
 #include <CarbonCore/TextEncodingConverter.h>
+#include <CarbonCore/UnicodeConverter.h>
 
 #endif
