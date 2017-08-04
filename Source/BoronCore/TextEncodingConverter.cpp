@@ -232,3 +232,14 @@ OSStatus TECDisposeConverter(TECObjectRef conv)
 	return noErr;
 }
 
+OSStatus TECClearConverterContextInfo(TECObjectRef encodingConverter)
+{
+    // FIXME: not implemented
+    return noErr;
+}
+
+OSStatus TECSetBasicOptions(TECObjectRef encodingConverter, OptionBits controlFlags)
+{
+    // FIXME: not implemented
+    return noErr;
+}

@@ -37,6 +37,10 @@ OSStatus TECFlushText(TECObjectRef encodingConverter, TextPtr outputBuffer, Byte
 
 OSStatus TECDisposeConverter(TECObjectRef newEncodingConverter);
 
+OSStatus TECClearConverterContextInfo(TECObjectRef encodingConverter);
+
+OSStatus TECSetBasicOptions(TECObjectRef encodingConverter, OptionBits controlFlags);
+
 #ifdef __cplusplus
 }
 #endif
