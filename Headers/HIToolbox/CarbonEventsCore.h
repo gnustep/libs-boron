@@ -36,6 +36,12 @@ extern "C" {
 extern UInt32 
 GetCurrentKeyModifiers(void);
 
+extern OSStatus 
+EnableSecureEventInput(void);
+
+extern OSStatus 
+DisableSecureEventInput(void);
+
 #ifdef __cplusplus
 }
 #endif

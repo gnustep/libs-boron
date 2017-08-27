@@ -8,7 +8,8 @@ $(SUBPROJECT_NAME)_C_FILES = \
 
 $(SUBPROJECT_NAME)_HEADER_FILES = \
   CarbonEventsCore.h \
-  Events.h
+  Events.h \
+  HIToolbox.h
 
 $(SUBPROJECT_NAME)_INCLUDE_DIRS = -I../../Headers
 $(SUBPROJECT_NAME)_HEADER_FILES_DIR = ../../Headers/HIToolbox
